@@ -19,6 +19,11 @@ html, body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+.font-display {
+  font-family: "Geist Sans", "Inter", system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
 #map {
   position: absolute;
   inset: 0;
@@ -53,18 +58,19 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Fraunces", serif;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-family: "Geist Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--bordeaux);
   flex: none;
 }
 
 .brand h1 {
   margin: 0;
-  font-family: "Fraunces", serif;
+  font-family: "Geist Sans", sans-serif;
   font-weight: 600;
-  font-size: 1.35rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
   color: var(--ink);
   line-height: 1.1;
 }
@@ -86,10 +92,10 @@ header {
   white-space: nowrap;
 }
 #stats strong {
-  font-family: "Fraunces", serif;
+  font-family: "Geist Sans", sans-serif;
   color: var(--bordeaux);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 #status {
@@ -110,8 +116,7 @@ header {
 .leaflet-popup-content-wrapper {
   background: var(--white);
   color: var(--ink);
-  border-radius: 4px;
-  border-top: 3px solid var(--bordeaux);
+  border-radius: 10px;
   box-shadow: 0 12px 32px rgba(61, 10, 26, 0.18);
   padding: 0;
 }
@@ -119,24 +124,31 @@ header {
 .leaflet-popup-tip { background: var(--white); }
 .leaflet-popup-close-button { color: var(--ink-muted) !important; }
 
-.card { padding: 16px 18px; min-width: 230px; max-width: 280px; }
-.card-head {
+.card { padding: 18px 20px; min-width: 240px; max-width: 290px; }
+
+.card-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
+.card-id { min-width: 0; }
 .card h3 {
   margin: 0;
-  font-family: "Fraunces", serif;
-  font-weight: 600;
-  font-size: 1.15rem;
+  font-family: "Geist Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1.08rem;
   color: var(--bordeaux);
-  line-height: 1.2;
+  line-height: 1.25;
+}
+.card .handle {
+  margin-top: 1px;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
 }
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   object-fit: cover;
   flex: none;
@@ -149,23 +161,53 @@ header {
   justify-content: center;
   background: var(--bordeaux-tint);
   color: var(--bordeaux);
-  font-family: "Fraunces", serif;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: "Geist Sans", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
 }
-.card .meta {
-  font-size: 0.8rem;
+
+.card .row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-top: 9px;
+}
+.card .row svg {
+  flex: none;
+  margin-top: 2px;
   color: var(--ink-muted);
-  line-height: 1.6;
-  margin-bottom: 10px;
 }
-.card .meta .loc { color: var(--ink); }
-.card hr {
-  border: none;
-  border-top: 1px solid var(--rule);
-  margin: 10px 0;
+.card .row a {
+  color: var(--bordeaux);
+  font-weight: 600;
+  text-decoration: none;
 }
+.card .row a:hover { text-decoration: underline; }
+
+.card a.wa-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: #25d366;
+  color: var(--white) !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 0.15s ease;
+}
+.wa-button:hover { filter: brightness(0.95); }
+
 .card .story {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--ink);
@@ -207,8 +249,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Fraunces", serif;
-  font-weight: 600;
+  font-family: "Geist Sans", sans-serif;
+  font-weight: 700;
   font-size: 0.9rem;
   border: 2px solid var(--white);
   box-shadow: 0 2px 8px rgba(61, 10, 26, 0.35);
