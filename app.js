@@ -64,13 +64,31 @@ function waLink(phone) {
 // or the link isn't a Drive one, fall back to the raw value — isSafePhotoUrl
 // + the <img onerror> initials fallback still apply downstream, so a bad
 // link degrades to initials rather than a broken pipeline.
-function driveThumbnail(raw) {
+function driveThumbnail(raw, sz) {
   if (!raw) return "";
   const first = raw.split(/[,\n]/)[0].trim();
   const m = first.match(/\/d\/([a-zA-Z0-9_-]{10,})/) || first.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w400`;
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w${sz || 400}`;
   return first;
 }
+
+// Lightbox: click a popup avatar to see the full-size photo. Global (not
+// module-scoped) because the img's onclick is inlined into popup HTML
+// strings built as plain text — there's no other handle to attach a
+// listener to once Leaflet injects that markup into the DOM.
+window.openLightbox = function (url) {
+  const box = document.getElementById("lightbox");
+  const img = document.getElementById("lightbox-img");
+  img.src = url;
+  box.classList.add("open");
+};
+window.closeLightbox = function () {
+  document.getElementById("lightbox").classList.remove("open");
+  document.getElementById("lightbox-img").src = "";
+};
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") window.closeLightbox();
+});
 
 const map = L.map("map", { worldCopyJump: true, minZoom: 2 }).setView([20, 10], 2);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -120,12 +138,15 @@ function isSafePhotoUrl(url) {
   }
 }
 
-function avatarHtml(name, photo) {
+function avatarHtml(name, photo, photoFull) {
   const label = initials(name) || "?";
   if (photo && isSafePhotoUrl(photo)) {
     // onerror swaps in the initials fallback if the image fails to load
     // (broken link, hotlink block, etc.) — never leave a broken-image icon.
-    return `<img class="avatar" src="${escapeAttr(photo)}" alt="" loading="lazy" ` +
+    // stopPropagation: the click must not fall through to Leaflet's popup
+    // container, which would otherwise treat it as a "click the map" close.
+    return `<img class="avatar avatar-clickable" src="${escapeAttr(photo)}" alt="" loading="lazy" ` +
+      `onclick="event.stopPropagation(); openLightbox('${escapeAttr(photoFull || photo)}')" ` +
       `onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'avatar avatar-fallback',textContent:'${escapeAttr(label)}'}))">`;
   }
   return `<div class="avatar avatar-fallback">${escapeHtml(label)}</div>`;
@@ -169,6 +190,7 @@ function render(rows) {
     const coords = parseGps(gpsRaw);
     if (!coords) { skipped++; return; }
     const photo = driveThumbnail(photoRaw);
+    const photoFull = driveThumbnail(photoRaw, 1600);
 
     // Group markers at the same rounded spot (~100m) so co-located
     // profiles fan out instead of stacking exactly on top of each other.
@@ -184,7 +206,7 @@ function render(rows) {
     marker.bindPopup(`
       <div class="card">
         <div class="card-top">
-          ${avatarHtml(name, photo)}
+          ${avatarHtml(name, photo, photoFull)}
           <div class="card-id">
             <h3>${escapeHtml(name)}</h3>
             ${bucque || numss ? `<div class="handle">${escapeHtml([bucque, numss].filter(Boolean).join(" · "))}</div>` : ""}
