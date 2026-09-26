@@ -163,6 +163,7 @@ function render(rows) {
     const gpsRaw = pick(row, "gps", "coordon", "localisation");
     const activity = pick(row, "fais-je", "fais je");
     const message = pick(row, "autres infos", "partager");
+    const wordFor26 = pick(row, "petit mot", "mot pour");
 
     if (!name) return;
     const coords = parseGps(gpsRaw);
@@ -193,6 +194,7 @@ function render(rows) {
         ${phone ? `<div class="row">${ICON_PHONE}<a href="tel:${escapeAttr(phone.replace(/[^0-9+]/g, ""))}">${escapeHtml(phone)}</a></div>` : ""}
         ${phone ? `<a class="wa-button" href="${escapeAttr(waLink(phone))}" target="_blank" rel="noopener">${ICON_WHATSAPP}Contacter sur WhatsApp</a>` : ""}
         ${message ? `<div class="story">${escapeHtml(message)}</div>` : ""}
+        ${wordFor26 ? `<div class="word26"><span class="word26-label">Pour les .26</span>${escapeHtml(wordFor26)}</div>` : ""}
       </div>
     `);
     clusterGroup.addLayer(marker);

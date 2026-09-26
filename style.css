@@ -214,6 +214,29 @@ header {
   white-space: pre-wrap;
 }
 
+.card .word26 {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--bordeaux-tint);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--bordeaux-deep);
+  white-space: pre-wrap;
+}
+.card .word26-label {
+  display: block;
+  margin-bottom: 3px;
+  font-family: "Geist Sans", sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--bordeaux);
+}
+
 .pin-icon {
   width: 12px; height: 12px;
   background: var(--bordeaux);
