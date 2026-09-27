@@ -269,19 +269,11 @@ function render(rows) {
 // fields, denser actions (icon buttons + the coordinates as the "locate"
 // control). A field added to the form needs a line in both templates.
 
-let listPeople = [];
-let listQuery = "";
-
 // "35.6812, 139.7671" → "35,68° N · 139,77° E" — French decimal comma,
 // hemisphere letters instead of signs, which is how a place reads aloud.
 function formatCoords([lat, lon]) {
   const f = n => Math.abs(n).toFixed(2).replace(".", ",");
   return `${f(lat)}° ${lat >= 0 ? "N" : "S"} · ${f(lon)}° ${lon >= 0 ? "E" : "O"}`;
-}
-
-// Accent- and case-insensitive: "ines" must find "Inès", "seoul" "Séoul".
-function fold(s) {
-  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
 function listCardHtml(p, i) {
@@ -313,43 +305,14 @@ function listCardHtml(p, i) {
 }
 
 function renderList(people) {
-  listPeople = people.map(p => ({
-    ...p,
-    // Leading space + punctuation → spaces, so a query token is matched
-    // against word starts only: "ines" finds Inès, not "racines".
-    haystack: " " + fold([p.name, p.bucque, p.numss, p.numss.replace(/^\d+/, ""), p.activity, p.message].join(" ")).replace(/[^a-z0-9]+/g, " "),
-  }));
-  paintList();
-}
-
-// Separate from renderList so typing only re-filters in-memory data, and so
-// the 5-minute refresh re-paints without touching the search field (it lives
-// outside #listBody): focus, caret and the query all survive a refresh.
-function paintList() {
   const body = document.getElementById("listBody");
-  const count = document.getElementById("listCount");
-  const tokens = fold(listQuery).split(/[^a-z0-9]+/).filter(Boolean);
-  const q = tokens.length > 0;
-  const shown = q ? listPeople.filter(p => tokens.every(t => p.haystack.includes(" " + t))) : listPeople;
-
-  const total = listPeople.length;
-  count.textContent = q
-    ? `${shown.length} sur ${total}`
-    : `${total} profil${total === 1 ? "" : "s"}`;
-
-  if (!total) {
+  if (!people.length) {
     body.innerHTML = `<div class="list-empty"><p class="list-empty-title">Personne pour l'instant</p><p>Les profils apparaîtront ici dès les premières réponses au formulaire.</p></div>`;
     return;
   }
-  if (!shown.length) {
-    body.innerHTML = `<div class="list-empty"><p class="list-empty-title">Aucun résultat pour « ${escapeHtml(listQuery.trim())} »</p><p>Essayez un prénom, une bucque ou une ville.</p><button type="button" class="list-empty-clear">Effacer la recherche</button></div>`;
-    body.querySelector(".list-empty-clear").addEventListener("click", () => setQuery("", true));
-    return;
-  }
-
-  body.innerHTML = `<div class="list-grid">${shown.map(listCardHtml).join("")}</div>`;
+  body.innerHTML = `<div class="list-grid">${people.map(listCardHtml).join("")}</div>`;
   body.querySelectorAll(".lc-place[data-index]").forEach(btn => {
-    btn.addEventListener("click", () => locateOnMap(shown[Number(btn.dataset.index)]));
+    btn.addEventListener("click", () => locateOnMap(people[Number(btn.dataset.index)]));
   });
   requestAnimationFrame(markClamped);
 }
@@ -387,35 +350,6 @@ window.addEventListener("resize", () => {
     });
     markClamped();
   }, 150);
-});
-
-// Hairline under the search bar only once content has scrolled beneath it.
-const listBar = document.querySelector(".list-bar");
-listEl.addEventListener("scroll", () => {
-  listBar.classList.toggle("is-scrolled", listEl.scrollTop > 4);
-}, { passive: true });
-
-const searchInput = document.getElementById("listSearch");
-function setQuery(value, focus) {
-  listQuery = value;
-  searchInput.value = value;
-  listEl.scrollTop = 0;
-  paintList();
-  if (focus) searchInput.focus();
-}
-searchInput.addEventListener("input", () => setQuery(searchInput.value));
-searchInput.addEventListener("keydown", e => {
-  if (e.key === "Escape" && searchInput.value) { e.stopPropagation(); setQuery(""); }
-});
-// "/" jumps to search, like most directories — only in list view and never
-// while the user is already typing somewhere.
-document.addEventListener("keydown", e => {
-  if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
-  if (!document.body.classList.contains("view-list")) return;
-  const t = e.target;
-  if (t.closest && t.closest("input, textarea, [contenteditable]")) return;
-  e.preventDefault();
-  searchInput.focus();
 });
 
 // Jumping straight to marker.getLatLng() would leave the popup unopened
