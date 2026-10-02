@@ -418,7 +418,16 @@ button.lc-place:active { transform: scale(0.97); }
 .leaflet-popup-tip { background: var(--white); }
 .leaflet-popup-close-button { color: var(--ink-muted) !important; }
 
-.card { padding: 18px 20px; min-width: 240px; max-width: 290px; }
+/* Capped to the map height so a long message scrolls inside the popup instead
+   of outgrowing the viewport (which made autoPan push the pin off-screen). */
+.card {
+  padding: 18px 20px;
+  min-width: 240px;
+  max-width: 290px;
+  max-height: calc(100vh - var(--header-h, 76px) - 90px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 
 .card-top {
   display: flex;

@@ -97,6 +97,11 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 const clusterGroup = L.markerClusterGroup({
+  // Default (true) drops markers outside the viewport on every moveend, and a
+  // marker removed from the map closes its popup. A popup taller than the map
+  // makes Leaflet's autoPan scroll the marker out of view, so the popup
+  // flashed open then closed itself. Pin count is small; keep them all.
+  removeOutsideVisibleBounds: false,
   iconCreateFunction: cluster => L.divIcon({
     html: `<div class="marker-cluster-custom" style="width:${34 + Math.min(cluster.getChildCount(),20)}px;height:${34 + Math.min(cluster.getChildCount(),20)}px">${cluster.getChildCount()}</div>`,
     className: "",
